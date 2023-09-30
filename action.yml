@@ -55,6 +55,10 @@ inputs:
   releaseBranch:
     required: false
     description: 'The branch within steam that this build will be automatically put live on.'
+  chownFilesTo:
+    required: false
+    default: ''
+    description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the output artifacts'
 outputs:
   manifest:
     description: "The path to the generated manifest.vdf"
@@ -79,3 +83,4 @@ runs:
     depot8Path: ${{ inputs.depot8Path }}
     depot9Path: ${{ inputs.depot9Path }}
     releaseBranch: ${{ inputs.releaseBranch }}
+    chownFilesTo: ${{ inputs.chownFilesTo }}

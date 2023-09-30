@@ -194,4 +194,9 @@ steamcmd +login "$steam_username" +run_app_build "$manifest_path" +quit || (
     exit 1
   )
 
+
+if [[ -n "$chownFilesTo" ]]; then
+  chown -R $chownFilesTo $GITHUB_WORKSPACE
+fi
+
 echo "manifest=${manifest_path}" >> $GITHUB_OUTPUT
