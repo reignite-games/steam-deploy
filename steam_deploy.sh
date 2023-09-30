@@ -194,8 +194,9 @@ steamcmd +login "$steam_username" +run_app_build "$manifest_path" +quit || (
     exit 1
   )
 
-
+# Make a given user owner of all artifacts
 if [[ -n "$chownFilesTo" ]]; then
+  echo "Changing ownership of files to $chownFilesTo for $GITHUB_WORKSPACE
   chown -R $chownFilesTo $GITHUB_WORKSPACE
 fi
 
