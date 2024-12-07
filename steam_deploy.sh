@@ -121,8 +121,9 @@ else
   mkdir -p "$steamdir/config"
 
   echo "Copying $steamdir/config/config.vdf..."
-  echo "$configVdf" | base64 -d > "$steamdir/config/config.vdf"
+  echo "$configVdf" | base64 -d | gunzip > "$steamdir/config/config.vdf"
   chmod 777 "$steamdir/config/config.vdf"
+  initialConfigVdfChecksum=$(md5sum "$steamdir/config/config.vdf" | awk '{ print $1 }')
 
   echo "Finished Copying SteamGuard Files!"
   echo ""
@@ -212,6 +213,37 @@ steamcmd +login "$steam_username" +run_app_build "$manifest_path" +quit || (
 if [[ -n "$chownFilesTo" ]]; then
   echo "Changing ownership of files to $chownFilesTo for $GITHUB_WORKSPACE"
   chown -R $chownFilesTo $GITHUB_WORKSPACE
+fi
+
+configVdfChecksum=$(md5sum "$steamdir/config/config.vdf" | awk '{ print $1 }')
+
+echo ""
+echo "####################################"
+echo "#       Check for Steam Guard      #"
+echo "#           file changes           #"
+echo "####################################"
+echo ""
+
+echo "initial md5sum $initialConfigVdfChecksum"
+echo "current md5sum $configVdfChecksum"
+
+if [ "$initialConfigVdfChecksum" = "$configVdfChecksum" ]; then
+    echo "Steam Guard files did not change, no need to update secret"
+else
+    echo "Steam Guard files change detected, need to update secret..."
+
+    echo ""
+    echo "####################################"
+    echo "#    Update Steam login secrets    #"
+    echo "####################################"
+    echo ""
+
+    echo "Updating login secrets with $steamdir/config/config.vdf ..."
+    gzip "$steamdir/config/config.vdf" -c | base64 | gh secret set -R reignite-games/PantaRhei STEAM_CONFIG_VDF
+    echo md5sum "$steamdir/config/config.vdf"
+
+    echo "Finished Updating Secret!"
+    echo ""
 fi
 
 echo "manifest=${manifest_path}" >> $GITHUB_OUTPUT
