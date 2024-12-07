@@ -232,18 +232,18 @@ if [ "$initialConfigVdfChecksum" = "$configVdfChecksum" ]; then
 else
     echo "Steam Guard files change detected, need to update secret..."
 
-    echo ""
-    echo "####################################"
-    echo "#    Update Steam login secrets    #"
-    echo "####################################"
-    echo ""
+    # echo ""
+    # echo "####################################"
+    # echo "#    Update Steam login secrets    #"
+    # echo "####################################"
+    # echo ""
 
-    echo "Updating login secrets with $steamdir/config/config.vdf ..."
-    gzip "$steamdir/config/config.vdf" -c | base64 | gh secret set -R reignite-games/PantaRhei STEAM_CONFIG_VDF
-    echo md5sum "$steamdir/config/config.vdf"
+    # echo "Updating login secrets with $steamdir/config/config.vdf ..."
+    # gzip "$steamdir/config/config.vdf" -c | base64 | gh secret set -R reignite-games/PantaRhei STEAM_CONFIG_VDF
+    # echo md5sum "$steamdir/config/config.vdf"
 
-    echo "Finished Updating Secret!"
-    echo ""
+    # echo "Finished Updating Secret!"
+    # echo ""
 fi
 
 echo "manifest=${manifest_path}" >> $GITHUB_OUTPUT
