@@ -209,12 +209,6 @@ steamcmd +login "$steam_username" +run_app_build "$manifest_path" +quit || (
     exit 1
   )
 
-# Make a given user owner of all artifacts
-if [[ -n "$chownFilesTo" ]]; then
-  echo "Changing ownership of files to $chownFilesTo for $GITHUB_WORKSPACE"
-  chown -R $chownFilesTo $GITHUB_WORKSPACE
-fi
-
 configVdfChecksum=$(md5sum "$steamdir/config/config.vdf" | awk '{ print $1 }')
 
 echo ""
@@ -231,19 +225,16 @@ if [ "$initialConfigVdfChecksum" = "$configVdfChecksum" ]; then
     echo "Steam Guard files did not change, no need to update secret"
 else
     echo "Steam Guard files change detected, need to update secret..."
+fi
 
-    # echo ""
-    # echo "####################################"
-    # echo "#    Update Steam login secrets    #"
-    # echo "####################################"
-    # echo ""
+echo "Copying $steamdir/config/config.vdf to update secret..."
+local_configVdf_path=$(pwd)/config.vdf
+cp "$steamdir/config/config.vdf" "$local_configVdf_path"
 
-    # echo "Updating login secrets with $steamdir/config/config.vdf ..."
-    # gzip "$steamdir/config/config.vdf" -c | base64 | gh secret set -R reignite-games/PantaRhei STEAM_CONFIG_VDF
-    # echo md5sum "$steamdir/config/config.vdf"
-
-    # echo "Finished Updating Secret!"
-    # echo ""
+# Make a given user owner of all artifacts
+if [[ -n "$chownFilesTo" ]]; then
+  echo "Changing ownership of files to $chownFilesTo for $GITHUB_WORKSPACE"
+  chown -R $chownFilesTo $GITHUB_WORKSPACE
 fi
 
 echo "manifest=${manifest_path}" >> $GITHUB_OUTPUT
